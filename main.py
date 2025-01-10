@@ -23,7 +23,7 @@ class Experiment(db.Model):
     dataset = db.Column(db.String(200), nullable = False)
     model = db.Column(db.String(200), nullable = False)
     started_at = db.Column(db.DateTime, default = datetime.now)
-    iterations = db.Column(db.Integer, nullable = False)
+    iterations = db.Column(db.Integer, nullable = False, default = 0)
     status = db.Column(db.Enum(StatusEnum), nullable = False, default = 'Running')
     
     #Hyperparameters
@@ -32,17 +32,17 @@ class Experiment(db.Model):
     num_epochs = db.Column(db.Integer, nullable = False)
     
     #Metrics ( Average Precision)
-    ap = db.Column(db.Float, nullable = False)
-    ap50 = db.Column(db.Float, nullable = False)
-    ap75 = db.Column(db.Float, nullable = False)
-    aps = db.Column(db.Float, nullable = False)
-    apm = db.Column(db.Float, nullable = False)
-    apl = db.Column(db.Float, nullable = False)
+    ap = db.Column(db.Float, nullable = False, default = 0.0)
+    ap50 = db.Column(db.Float, nullable = False, default = 0.0)
+    ap75 = db.Column(db.Float, nullable = False, default = 0.0)
+    aps = db.Column(db.Float, nullable = False, default = 0.0)
+    apm = db.Column(db.Float, nullable = False, default = 0.0)
+    apl = db.Column(db.Float, nullable = False, default = 0.0)
     
     #Metrics (Loss)
-    total_loss = db.Column(db.Float, nullable = False)
-    cls_loss = db.Column(db.Float, nullable = False)
-    bbox_loss = db.Column(db.Float, nullable = False)
+    total_loss = db.Column(db.Float, nullable = False, default = 0.0)
+    cls_loss = db.Column(db.Float, nullable = False, default = 0.0)
+    bbox_loss = db.Column(db.Float, nullable = False, default = 0.0)
     mask_loss = db.Column(db.Float, nullable = True) # Optional metric for Instance Segmentation models
     
     
