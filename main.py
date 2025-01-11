@@ -144,6 +144,41 @@ def delete_experiment(run_id):
         return jsonify({"message": "Experiment deleted successfully."}), 200
     except Exception as e:
         return jsonify({"error": str(e)}), 400
+    
+#Status endpoint to monitor the status 
+@app.route('/experiments/<string:run_id>/status', methods = ['GET'])
+def get_experiment_status(run_id): 
+    experiment = Experiment.query.filter_by(run_id = run_id).first()
+    if experiment is None: 
+        return jsonify({"error": "Experiment not found."}), 404
+    result = {
+        "run_id": experiment.run_id,
+        "status": experiment.status.value,
+        "iterations": experiment.iterations,
+        "started_at": experiment.started_at
+    }
+    return jsonify(result), 200
+
+#Metrics endpoint to get the metrics of the experiment
+@app.route('/experiments/<string:run_id>/metrics', methods = ['GET'])
+def get_experiment_metrics(run_id):
+    experiment = Experiment.query.filter_by(run_id = run_id).first()
+    if experiment is None: 
+        return jsonify({"error": "Experiment not found."}), 404
+    result = {
+        "run_id": experiment.run_id,
+        "ap": experiment.ap,
+        "ap50": experiment.ap50,
+        "ap75": experiment.ap75,
+        "aps": experiment.aps,
+        "apm": experiment.apm,
+        "apl": experiment.apl,
+        "total_loss": experiment.total_loss,
+        "cls_loss": experiment.cls_loss,
+        "bbox_loss": experiment.bbox_loss,
+        "mask_loss": experiment.mask_loss
+    }
+    return jsonify(result), 200
 
 @app.route('/')
 def hello():
