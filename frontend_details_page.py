@@ -28,7 +28,7 @@ def show_details_page():
             st.write(f"### Details for Run ID: {selected_run_id}")
 
             st.write("#### Run Information")
-            st.table({
+            st.dataframe({
                 "Dataset": info_details["dataset"],
                 "Model": info_details["model"], 
                 "Status": status_details["status"],
@@ -41,7 +41,7 @@ def show_details_page():
                 "Batch Size": info_details["batch_size"],
                 "Number of Epochs": info_details["num_epochs"]
             }])
-            st.table(hyper_df)
+            st.dataframe(hyper_df)
             
         if run_response_metrics.status_code == 200: 
             metric_details = run_response_metrics.json()    
@@ -56,7 +56,7 @@ def show_details_page():
                 "APM": metric_details["apm"],
                 "APL": metric_details["apl"]
             }])
-            st.table(ap_df)
+            st.dataframe(ap_df)
             
             st.write("#### Losses")
             losses_df = pd.DataFrame([{
@@ -65,7 +65,7 @@ def show_details_page():
                     "Bbox Loss": metric_details["bbox_loss"],
                     "Mask Loss": metric_details.get("mask_loss", "N/A")
                 }])
-            st.table(losses_df)
+            st.dataframe(losses_df)
         else:
                 st.error("Failed to load Details.")
     else:
