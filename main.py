@@ -1,8 +1,11 @@
-from flask import Flask, render_template, request, jsonify
+from flask import Flask, logging, render_template, request, jsonify
 from flask_sqlalchemy import SQLAlchemy
 from datetime import datetime
 import os
 from enum import Enum
+
+# Initialize logging
+logging.basicConfig(level=logging.INFO)
 
 app = Flask(__name__)
 app.config['SQLALCHEMY_DATABASE_URI'] = f"sqlite:///{os.path.abspath('experiments.db')}"
@@ -47,22 +50,24 @@ class Experiment(db.Model):
     
 #Endpoints 
 # Endpoint to create a new experiment
-@app.route('/experiments', methods = ['POST'])
+@app.route('/experiments', methods=['POST'])
 def create_experiment():
-    data = request.json   
+    data = request.json
     try:
         new_experiment = Experiment(
-            run_id = data['run_id'],
-            dataset = data['dataset'],
-            model = data['model'],
-            learning_rate = data['learning_rate'],
-            batch_size = data['batch_size'],
-            num_epochs = data['num_epochs']
+            run_id=data['run_id'],
+            dataset=data['dataset'],
+            model=data['model'],
+            learning_rate=data['learning_rate'],
+            batch_size=data['batch_size'],
+            num_epochs=data['num_epochs']
         )
         db.session.add(new_experiment)
         db.session.commit()
-        return jsonify({"message": "Experiment created successfully."}), 201
+        logging.info(f"Experiment {data['run_id']} created successfully.")
+        return jsonify({"message": "Experiment created successfully!"}), 201
     except Exception as e:
+        logging.error(f"Error creating experiment: {str(e)}")
         return jsonify({"error": str(e)}), 400
     
 # Read endpoint to get all the experiments
@@ -93,6 +98,7 @@ def get_experiments():
             "bbox_loss": exp.bbox_loss,
             "mask_loss": exp.mask_loss
         })
+    logging.info("Retrieved all experiments.")
     return jsonify(result), 200 
 
 #Update endpoint to update the status of the experiment
@@ -101,6 +107,7 @@ def update_experiment(run_id):
     data = request.json
     experiment = Experiment.query.filter_by(run_id = run_id).first()
     if experiment is None: 
+        logging.warning(f"Experiment {run_id} not found.")
         return jsonify({"error": "Experiment not found."}), 404
     try: 
         if 'status' in data: 
@@ -128,8 +135,10 @@ def update_experiment(run_id):
         if 'mask_loss' in data:
             experiment.mask_loss = data['mask_loss']
         db.session.commit()
+        logging.info(f"Experiment {run_id} updated successfully.")
         return jsonify({"message": "Experiment updated successfully."}), 200
     except Exception as e:
+        logging.error(f"Error updating experiment {run_id}: {str(e)}")
         return jsonify({"error": str(e)}), 400
     
 #Delete endpoint to delete an experiment
@@ -137,12 +146,15 @@ def update_experiment(run_id):
 def delete_experiment(run_id):
     experiment = Experiment.query.filter_by(run_id = run_id).first()
     if experiment is None: 
+        logging.warning(f"Experiment {run_id} not found.")
         return jsonify({"error": "Experiment not found."}), 404
     try: 
         db.session.delete(experiment)
         db.session.commit()
+        logging.info(f"Experiment {run_id} deleted successfully.")
         return jsonify({"message": "Experiment deleted successfully."}), 200
     except Exception as e:
+        logging.error(f"Error deleting experiment {run_id}: {str(e)}")
         return jsonify({"error": str(e)}), 400
     
 #Status endpoint to monitor the status 
@@ -150,6 +162,7 @@ def delete_experiment(run_id):
 def get_experiment_status(run_id): 
     experiment = Experiment.query.filter_by(run_id = run_id).first()
     if experiment is None: 
+        logging.warning(f"Experiment {run_id} not found.")
         return jsonify({"error": "Experiment not found."}), 404
     result = {
         "run_id": experiment.run_id,
@@ -157,6 +170,7 @@ def get_experiment_status(run_id):
         "iterations": experiment.iterations,
         "started_at": experiment.started_at
     }
+    logging.info(f"Status for experiment {run_id} retrieved successfully.")
     return jsonify(result), 200
 
 #Metrics endpoint to get the metrics of the experiment
@@ -164,6 +178,7 @@ def get_experiment_status(run_id):
 def get_experiment_metrics(run_id):
     experiment = Experiment.query.filter_by(run_id = run_id).first()
     if experiment is None: 
+        logging.warning(f"Experiment {run_id} not found.")
         return jsonify({"error": "Experiment not found."}), 404
     result = {
         "run_id": experiment.run_id,
@@ -178,6 +193,7 @@ def get_experiment_metrics(run_id):
         "bbox_loss": experiment.bbox_loss,
         "mask_loss": experiment.mask_loss
     }
+    logging.info(f"Metrics for experiment {run_id} retrieved successfully.")
     return jsonify(result), 200
 
 #Automatic update Endpoint to live update the status of the experiment
@@ -185,9 +201,11 @@ def get_experiment_metrics(run_id):
 def update_experiment_live(run_id):
     experiment = Experiment.query.filter_by(run_id = run_id).first()
     if experiment is None: 
+        logging.warning(f"Experiment {run_id} not found.")
         return jsonify({"error": "Experiment not found."}), 404
     data = request.json 
     if data is None: 
+        logging.error("No data provided for live update.")
         return jsonify({"error": "No data provided."}), 400
     try: 
         if 'status' in data: 
@@ -215,8 +233,10 @@ def update_experiment_live(run_id):
         if 'mask_loss' in data:
             experiment.mask_loss = data['mask_loss']
         db.session.commit()
+        logging.info(f"Experiment {run_id} updated successfully.")
         return jsonify({"message": "Experiment updated successfully."}), 200
     except Exception as e:
+        logging.error(f"Error updating experiment {run_id}: {str(e)}")
         return jsonify({"error": str(e)}), 400
 
 @app.route('/')
