@@ -6,6 +6,7 @@ BASE_URL = "http://localhost:5000"
 
 st.set_page_config(page_title="MiniML: Details", layout="wide")
 st.title("Details of a Run")
+col1, col2 = st.columns([1, 4]) 
 
 #Get Run IDs
 response = requests.get(f"{BASE_URL}/experiments")
@@ -48,6 +49,12 @@ if selected_run_id:
         
         st.write("### Metrics")
         st.write("#### Average Precision")
+        display_option = st.selectbox(
+            "Select display option for AP metrics",
+            options=["Bar Chart", "DataFrame"]
+        )
+
+        # Daten für Average Precision vorbereiten
         ap_df = pd.DataFrame([{
             "AP": metric_details["ap"],
             "AP50": metric_details["ap50"],
@@ -56,8 +63,13 @@ if selected_run_id:
             "APM": metric_details["apm"],
             "APL": metric_details["apl"]
         }])
-        st.dataframe(ap_df)
-        
+
+        # Anzeige je nach Auswahl
+        if display_option == "Bar Chart":
+            st.bar_chart(ap_df.T.rename(columns={0: "Value"}))
+        else:
+            st.dataframe(ap_df)
+            
         st.write("#### Losses")
         losses_df = pd.DataFrame([{
                 "Total Loss": metric_details["total_loss"],

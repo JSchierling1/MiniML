@@ -1,12 +1,4 @@
 import streamlit as st
-import requests
-import pandas as pd 
-import numpy as np
-
-from pages.details import show_details_page 
-from pages.home import show_home_page
-from pages.running import show_running_page
-from pages.compare import show_compare_page
 
 BASE_URL = "http://127.0.0.1:5000"
 
