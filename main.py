@@ -180,6 +180,45 @@ def get_experiment_metrics(run_id):
     }
     return jsonify(result), 200
 
+#Automatic update Endpoint to live update the status of the experiment
+@app.route('/experiments/<string:run_id>/update', methods = ['POST'])
+def update_experiment_live(run_id):
+    experiment = Experiment.query.filter_by(run_id = run_id).first()
+    if experiment is None: 
+        return jsonify({"error": "Experiment not found."}), 404
+    data = request.json 
+    if data is None: 
+        return jsonify({"error": "No data provided."}), 400
+    try: 
+        if 'status' in data: 
+            experiment.status = StatusEnum(data['status'])
+        if 'iterations' in data: 
+            experiment.iterations = data['iterations']
+        if 'ap' in data: 
+            experiment.ap = data['ap']
+        if 'ap50' in data: 
+            experiment.ap50 = data['ap50']
+        if 'ap75' in data:
+            experiment.ap75 = data['ap75']
+        if 'aps' in data:
+            experiment.aps = data['aps']
+        if 'apm' in data:
+            experiment.apm = data['apm']
+        if 'apl' in data:
+            experiment.apl = data['apl']
+        if 'total_loss' in data:
+            experiment.total_loss = data['total_loss']
+        if 'cls_loss' in data:
+            experiment.cls_loss = data['cls_loss']
+        if 'bbox_loss' in data:
+            experiment.bbox_loss = data['bbox_loss']
+        if 'mask_loss' in data:
+            experiment.mask_loss = data['mask_loss']
+        db.session.commit()
+        return jsonify({"message": "Experiment updated successfully."}), 200
+    except Exception as e:
+        return jsonify({"error": str(e)}), 400
+
 @app.route('/')
 def hello():
     return "Hello, World!"
