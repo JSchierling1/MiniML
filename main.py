@@ -239,9 +239,74 @@ def update_experiment_live(run_id):
         logging.error(f"Error updating experiment {run_id}: {str(e)}")
         return jsonify({"error": str(e)}), 400
 
+#Comparison endpoint 
+@app.route('/experiments/compare', methods = ['GET'])
+def compare_experiments():
+    status_filter = request.args.get('status')
+    sort_by = request.args.get('sort_by', 'run_id')
+    order = request.args.get('order', 'desc')
+    limit = request.args.get('limit', 10, type=int)
+    
+    valid_sort_fields = [
+        'id', 'run_id', 'dataset', 'model', 'status',
+        'learning_rate', 'batch_size', 'num_epochs',
+        'ap', 'ap50', 'ap75', 'aps', 'apm', 'apl',
+        'total_loss', 'cls_loss', 'bbox_loss', 'mask_loss', 'iterations'
+    ]
+
+    if sort_by not in valid_sort_fields:
+        logging.error("Invalid sort_by field.")
+        return jsonify({"error": "Invalid sort_by field."}), 400
+    
+    query = Experiment.query
+    
+    if status_filter:
+        try: 
+            status_enum = StatusEnum(status_filter)
+            query = query.filter_by(status = status_enum)
+        except ValueError:
+            logging.error("Invalid status value.")
+            return jsonify({"error": "Invalid status value."}), 400
+    
+    if order == 'asc': 
+        query = query.order_by(getattr(Experiment, sort_by).asc())
+    else:
+        query = query.order_by(getattr(Experiment, sort_by).desc())
+
+    if limit: 
+        query = query.limit(limit)
+        
+    experiments = query.all()
+    result = []
+    for exp in experiments: 
+        result.append({
+            "id": exp.id,
+            "run_id": exp.run_id,
+            "dataset": exp.dataset,
+            "model": exp.model,
+            "status": exp.status.value,
+            "learning_rate": exp.learning_rate,
+            "batch_size": exp.batch_size,
+            "num_epochs": exp.num_epochs,
+            "ap": exp.ap,
+            "ap50": exp.ap50,
+            "ap75": exp.ap75,
+            "aps": exp.aps,
+            "apm": exp.apm,
+            "apl": exp.apl,
+            "total_loss": exp.total_loss,
+            "cls_loss": exp.cls_loss,
+            "bbox_loss": exp.bbox_loss,
+            "mask_loss": exp.mask_loss,
+            "iterations": exp.iterations
+        })
+    logging.info("Compared experiments.")
+    return jsonify(result), 200
+
+
 @app.route('/')
 def hello():
-    return "Hello, World!"
+    return "Welcome to MiniML - The Machine Learning Experiment Tracker!"
 
 if __name__ == '__main__':
     with app.app_context():
