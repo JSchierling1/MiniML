@@ -174,6 +174,24 @@ def get_experiment_status(run_id):
     logging.info(f"Status for experiment {run_id} retrieved successfully.")
     return jsonify(result), 200
 
+#Information endpoint to get the information of the experiment
+@app.route('/experiments/<string:run_id>/info', methods = ['GET'])
+def get_experiment_info(run_id):
+    experiment = Experiment.query.filter_by(run_id = run_id).first()
+    if experiment is None: 
+        logging.warning(f"Experiment {run_id} not found.")
+        return jsonify({"error": "Experiment not found."}), 404
+    result = {
+        "run_id": experiment.run_id,
+        "dataset": experiment.dataset,
+        "model": experiment.model,
+        "learning_rate": experiment.learning_rate,
+        "batch_size": experiment.batch_size,
+        "num_epochs": experiment.num_epochs
+    }
+    logging.info(f"Information for experiment {run_id} retrieved successfully.")
+    return jsonify(result), 200
+
 #Metrics endpoint to get the metrics of the experiment
 @app.route('/experiments/<string:run_id>/metrics', methods = ['GET'])
 def get_experiment_metrics(run_id):
