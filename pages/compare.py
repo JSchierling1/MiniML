@@ -64,7 +64,7 @@ with col1:
             }])
             st.dataframe(hyper_df_1)
 
-            display_metrics(metrics_details_1, key_prefix="run_1")
+            #display_metrics(metrics_details_1, key_prefix="run_1")
         
 # Column for second run to compare
 with col2:
@@ -94,7 +94,7 @@ with col2:
             }])
             st.dataframe(hyper_df_2)
 
-            display_metrics(metrics_details_2, key_prefix="run_2")
+            #display_metrics(metrics_details_2, key_prefix="run_2")
             
 # Compare metrics
 if run_1_details and run_2_details: 
@@ -127,7 +127,7 @@ if run_1_details and run_2_details:
             ]
         })
         st.write("#### AP Metrics Comparison")
-        st.bar_chart(comparison_df.set_index("Metric"))
+        st.bar_chart(comparison_df.set_index("Metric"), stack=False)
     
     elif metric_type == "Loss":
         comparison_df = pd.DataFrame({
@@ -146,5 +146,5 @@ if run_1_details and run_2_details:
             ]
         })
         st.write("#### Loss Metrics Comparison")
-        st.bar_chart(comparison_df.set_index("Metric"))
+        st.bar_chart(comparison_df.set_index("Metric"), stack=False)
     
