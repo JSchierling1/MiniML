@@ -45,8 +45,10 @@ class Experiment(db.Model):
     
     #Metrics (Loss)
     total_loss = db.Column(db.Float, nullable = False, default = 0.0)
-    cls_loss = db.Column(db.Float, nullable = False, default = 0.0)
-    bbox_loss = db.Column(db.Float, nullable = False, default = 0.0)
+    loss_cls = db.Column(db.Float, nullable = False, default = 0.0)
+    loss_box_reg = db.Column(db.Float, nullable = False, default = 0.0)
+    loss_rpn_cls = db.Column(db.Float, nullable = False, default = 0.0)
+    loss_rpn_loc = db.Column(db.Float, nullable = False, default = 0.0)
     mask_loss = db.Column(db.Float, nullable = True) # Optional metric for Instance Segmentation models
     
 #Endpoints 
@@ -95,8 +97,10 @@ def get_experiments():
             "apm": exp.apm,
             "apl": exp.apl,
             "total_loss": exp.total_loss,
-            "cls_loss": exp.cls_loss,
-            "bbox_loss": exp.bbox_loss,
+            "loss_cls": exp.loss_cls,
+            "loss_box_reg": exp.loss_box_reg,
+            "loss_rpn_cls": exp.loss_rpn_cls,
+            "loss_rpn_loc": exp.loss_rpn_loc,
             "mask_loss": exp.mask_loss
         })
     logging.info("Retrieved all experiments.")
@@ -129,10 +133,14 @@ def update_experiment(run_id):
             experiment.apl = data['apl']
         if 'total_loss' in data:
             experiment.total_loss = data['total_loss']
-        if 'cls_loss' in data:
-            experiment.cls_loss = data['cls_loss']
-        if 'bbox_loss' in data:
-            experiment.bbox_loss = data['bbox_loss']
+        if 'loss_cls' in data:
+            experiment.loss_cls = data['loss_cls']
+        if 'loss_box_reg' in data:
+            experiment.loss_box_reg = data['loss_box_reg']
+        if 'loss_rpn_cls' in data:
+            experiment.loss_rpn_cls = data['loss_rpn_cls']
+        if 'loss_rpn_loc' in data:
+            experiment.loss_rpn_loc = data['loss_rpn_loc']
         if 'mask_loss' in data:
             experiment.mask_loss = data['mask_loss']
         db.session.commit()
@@ -190,8 +198,10 @@ def get_experiment_metrics(run_id):
         "apm": experiment.apm,
         "apl": experiment.apl,
         "total_loss": experiment.total_loss,
-        "cls_loss": experiment.cls_loss,
-        "bbox_loss": experiment.bbox_loss,
+        "loss_cls": experiment.loss_cls,
+        "loss_box_reg": experiment.loss_box_reg,
+        "loss_rpn_cls": experiment.loss_rpn_cls,
+        "loss_rpn_loc": experiment.loss_rpn_loc,
         "mask_loss": experiment.mask_loss
     }
     logging.info(f"Metrics for experiment {run_id} retrieved successfully.")
@@ -227,10 +237,14 @@ def update_experiment_live(run_id):
             experiment.apl = data['apl']
         if 'total_loss' in data:
             experiment.total_loss = data['total_loss']
-        if 'cls_loss' in data:
-            experiment.cls_loss = data['cls_loss']
-        if 'bbox_loss' in data:
-            experiment.bbox_loss = data['bbox_loss']
+        if 'loss_cls' in data:
+            experiment.loss_cls = data['loss_cls']
+        if 'loss_box_reg' in data:
+            experiment.loss_box_reg = data['loss_box_reg']
+        if 'loss_rpn_cls' in data:
+            experiment.loss_rpn_cls = data['loss_rpn_cls']
+        if 'loss_rpn_loc' in data:
+            experiment.loss_rpn_loc = data['loss_rpn_loc']
         if 'mask_loss' in data:
             experiment.mask_loss = data['mask_loss']
         db.session.commit()
@@ -252,7 +266,7 @@ def compare_experiments():
         'id', 'run_id', 'dataset', 'model', 'status',
         'learning_rate', 'batch_size', 'num_epochs',
         'ap', 'ap50', 'ap75', 'aps', 'apm', 'apl',
-        'total_loss', 'cls_loss', 'bbox_loss', 'mask_loss', 'iterations'
+        'total_loss', 'loss_cls', 'loss_box_reg', 'loss_rpn_cls', 'loss_rpn_loc' 'mask_loss', 'iterations'
     ]
 
     if sort_by not in valid_sort_fields:
@@ -296,8 +310,10 @@ def compare_experiments():
             "apm": exp.apm,
             "apl": exp.apl,
             "total_loss": exp.total_loss,
-            "cls_loss": exp.cls_loss,
-            "bbox_loss": exp.bbox_loss,
+            "loss_cls": exp.loss_cls,
+            "loss_box_reg": exp.loss_box_reg,
+            "loss_rpn_cls": exp.loss_rpn_cls,
+            "loss_rpn_loc": exp.loss_rpn_loc,
             "mask_loss": exp.mask_loss,
             "iterations": exp.iterations
         })
