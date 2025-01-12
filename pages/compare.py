@@ -131,17 +131,21 @@ if run_1_details and run_2_details:
     
     elif metric_type == "Loss":
         comparison_df = pd.DataFrame({
-            "Metric": ["Total Loss", "Classification Loss", "BBox Loss", "Mask Loss"],
+            "Metric": ["Total Loss", "Classification Loss", "BBox Regression Loss", "RPN Classification Loss", "RPN Localization Loss", "Mask Loss"],
             f"Run {selected_run_id_1}": [
                 metrics_details_1["total_loss"],
-                metrics_details_1["cls_loss"],
-                metrics_details_1["bbox_loss"],
+                metrics_details_1["loss_cls"],
+                metrics_details_1["loss_box_reg"],
+                metrics_details_1["loss_rpn_cls"],
+                metrics_details_1["loss_rpn_loc"],
                 metrics_details_1.get("mask_loss", "N/A")
             ],
             f"Run {selected_run_id_2}": [
                 metrics_details_2["total_loss"],
-                metrics_details_2["cls_loss"],
-                metrics_details_2["bbox_loss"],
+                metrics_details_2["loss_cls"],
+                metrics_details_2["loss_box_reg"],
+                metrics_details_2["loss_rpn_cls"],
+                metrics_details_2["loss_rpn_loc"],
                 metrics_details_2.get("mask_loss", "N/A")
             ]
         })

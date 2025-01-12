@@ -27,8 +27,10 @@ if response.status_code == 200:
         "apm",
         "apl",
         "total_loss",
-        "cls_loss",
-        "bbox_loss",
+        "loss_cls",
+        "loss_box_reg",
+        "loss_rpn_cls",
+        "loss_rpn_loc",
         "iterations",
         "mask_loss"
     ]
@@ -51,8 +53,10 @@ if response.status_code == 200:
         "apm": "APM",
         "apl": "APL",
         "total_loss": "Total Loss",
-        "cls_loss": "Classification Loss",
-        "bbox_loss": "BBox Loss",
+        "loss_cls": "Classification Loss",
+        "loss_box_reg": "Bbox Regression Loss",
+        "loss_rpn_cls": "RPN Classification Loss",
+        "loss_rpn_loc": "RPN Localization Loss",
         "iterations": "Iterations",
         "mask_loss": "Mask Loss"
     })

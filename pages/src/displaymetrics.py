@@ -38,8 +38,10 @@ def display_metrics(metrics_details, key_prefix):
     
     losses_df = pd.DataFrame([{
         "Total Loss": metrics_details["total_loss"],
-        "Classification Loss": metrics_details["cls_loss"],
-        "Bbox Loss": metrics_details["bbox_loss"],
+        "Classification Loss": metrics_details["loss_cls"],
+        "Bbox Regression Loss": metrics_details["loss_box_reg"],
+        "RPN Classification Loss": metrics_details["loss_rpn_cls"],
+        "RPN Localization Loss": metrics_details["loss_rpn_loc"],
         "Mask Loss": metrics_details.get("mask_loss", "N/A")
     }])
     
