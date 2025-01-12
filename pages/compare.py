@@ -95,4 +95,56 @@ with col2:
             st.dataframe(hyper_df_2)
 
             display_metrics(metrics_details_2, key_prefix="run_2")
+            
+# Compare metrics
+if run_1_details and run_2_details: 
+    st.write("### Comparison")
+    
+    #Dropdown to select metric
+    metric_type = st.selectbox(
+        "Select metric type to compare", 
+        options=["AP", "Loss"]
+    )
+    
+    if metric_type == "AP":
+        comparison_df = pd.DataFrame({
+            "Metric": ["AP", "AP50", "AP75", "APS", "APM", "APL"],
+            f"Run {selected_run_id_1}": [
+                metrics_details_1["ap"],
+                metrics_details_1["ap50"],
+                metrics_details_1["ap75"],
+                metrics_details_1["aps"],
+                metrics_details_1["apm"],
+                metrics_details_1["apl"]
+            ],
+            f"Run {selected_run_id_2}": [
+                metrics_details_2["ap"],
+                metrics_details_2["ap50"],
+                metrics_details_2["ap75"],
+                metrics_details_2["aps"],
+                metrics_details_2["apm"],
+                metrics_details_2["apl"]
+            ]
+        })
+        st.write("#### AP Metrics Comparison")
+        st.bar_chart(comparison_df.set_index("Metric"))
+    
+    elif metric_type == "Loss":
+        comparison_df = pd.DataFrame({
+            "Metric": ["Total Loss", "Classification Loss", "BBox Loss", "Mask Loss"],
+            f"Run {selected_run_id_1}": [
+                metrics_details_1["total_loss"],
+                metrics_details_1["cls_loss"],
+                metrics_details_1["bbox_loss"],
+                metrics_details_1.get("mask_loss", "N/A")
+            ],
+            f"Run {selected_run_id_2}": [
+                metrics_details_2["total_loss"],
+                metrics_details_2["cls_loss"],
+                metrics_details_2["bbox_loss"],
+                metrics_details_2.get("mask_loss", "N/A")
+            ]
+        })
+        st.write("#### Loss Metrics Comparison")
+        st.bar_chart(comparison_df.set_index("Metric"))
     
