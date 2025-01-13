@@ -20,6 +20,12 @@ By working on this project, I aim to:
 - Gain experience in integrating a backend with a frontend dashboard.
 - Build a tool that can be expanded and used for future ML projects.
 
+## 📄 **Pages**
+- 🏠 Home: Get a Overview over all saved experiments
+- 🔍 Details: Detailed view of one experiment 
+- ⚖️ Compare: Compare two experiments
+- 🚀 Running: View running experiments live (Planned Feature)
+
 ## 🛠 **Technologies Used**
 
 - **Backend:** Flask (Python)  
@@ -37,7 +43,7 @@ By working on this project, I aim to:
 
 1. Clone the repository:
    ```bash
-   git clone https://github.com/yourusername/MiniML.git
+   git clone https://github.com/JSchierling1/MiniML.git
 2. Install dependencies: 
     ```bash 
     pip install -r requirements.txt
@@ -47,6 +53,9 @@ By working on this project, I aim to:
 4. Open a new terminal and run the frontend: 
     ```bash
     streamlit run frontend.py
+5. Open a new terminal and load data to database: 
+    ```bash 
+    python import_test_data.py
 
 ## 🔧 **Work in Progress**
 
