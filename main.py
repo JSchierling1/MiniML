@@ -1,4 +1,16 @@
-from flask import Flask, render_template, request, jsonify
+
+from flask import Flask, Response, logging, render_template, request, jsonify@app.route('/experiments/<string:run_id>/logs', methods = ['GET'])
+def get_experiment_logs(run_id):
+    experiment = Experiment.query.filter_by(run_id = run_id).first()
+    if experiment is None: 
+        logging.warning(f"Experiment {run_id} not found.")
+        return jsonify({"error": "Experiment not found."}), 404
+    result = {
+        "run_id": experiment.run_id,
+        "logs": experiment.logs
+    }
+    logging.info(f"Logs for experiment {run_id} retrieved successfully.")
+    return jsonify(result), 200
 from flask_sqlalchemy import SQLAlchemy
 from datetime import datetime
 import os
@@ -338,6 +350,31 @@ def compare_experiments():
     logging.info("Compared experiments.")
     return jsonify(result), 200
 
+#Live Logging for Output 
+logs = {}
+
+@app.route('/experiments/<string:run_id>/logs', methods = ['POST'])
+def get_experiment_logs(run_id): 
+    #Get logs from workstation and save them temporarily
+    data = request.json
+    log_entry = data.get('log')
+    if not log_entry: 
+        return jsonify({"error": "No log entry provided."}), 400
+    
+    if run_id not in logs: 
+        logs[run_id] = []
+    logs[run_id].append(log_entry)
+    
+    return jsonify({"message": "Log received successfully."}), 200
+
+@app.route('/experiments/<string:run_id>/logs', methods = ['GET'])
+def stream_logs(run_id):
+    def generate():
+        if run_id in logs:
+            for log in logs[run_id]:
+                yield log + '\n'
+    
+    return Response(generate(), mimetype='text/plain')
 
 @app.route('/')
 def hello():
