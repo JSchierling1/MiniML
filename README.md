@@ -29,7 +29,7 @@ By working on this project, I aim to:
 ## 🛠 **Technologies Used**
 
 - **Backend:** Flask (Python)  
-- **Database:** SQLite  
+- **Database:** SQLite, SQLAlchemy 
 - **Frontend:** Streamlit (Python)  
 - **Visualization:** Matplotlib, Plotly
 
