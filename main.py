@@ -1,16 +1,5 @@
 
-from flask import Flask, Response, logging, render_template, request, jsonify@app.route('/experiments/<string:run_id>/logs', methods = ['GET'])
-def get_experiment_logs(run_id):
-    experiment = Experiment.query.filter_by(run_id = run_id).first()
-    if experiment is None: 
-        logging.warning(f"Experiment {run_id} not found.")
-        return jsonify({"error": "Experiment not found."}), 404
-    result = {
-        "run_id": experiment.run_id,
-        "logs": experiment.logs
-    }
-    logging.info(f"Logs for experiment {run_id} retrieved successfully.")
-    return jsonify(result), 200
+from flask import Flask, Response, logging, render_template, request, jsonify
 from flask_sqlalchemy import SQLAlchemy
 from datetime import datetime
 import os
