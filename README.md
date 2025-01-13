@@ -33,6 +33,21 @@ By working on this project, I aim to:
 - Streamlit dashboard for visualizing experiment data.
 - SQLite database for storing experiment information.
 
+## 🚀 **Getting Started**
+
+1. Clone the repository:
+   ```bash
+   git clone https://github.com/yourusername/MiniML.git
+2. Install dependencies: 
+    ```bash 
+    pip install -r requirements.txt
+3. Start backend: 
+    ```bash
+    python main.py
+4. Open a new terminal and run the frontend: 
+    ```bash
+    streamlit run frontend.py
+
 ## 🔧 **Work in Progress**
 
 This project is a work in progress, and I will continue to add features.
