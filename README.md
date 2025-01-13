@@ -8,7 +8,7 @@ This tool is being developed using **Flask** for the backend and **Streamlit** f
 - Setting up a basic Flask API for logging experiment data.
 - Creating a simple dashboard using **Streamlit** to visualize experiments.
 - Using **SQLite** for lightweight data storage.
-- Visualizing metrics such as Loss and Accuracy in real-time.
+- Adding real-time visualization for metrics such as Loss and Accuracy. (Planned Feature)
 
 ## 🔍 **Motivation**
 The primary motivation for this project is to gain hands-on experience in developing a custom experiment tracking tool, which I plan to use for my Bachelor Thesis project on Machine Learning. The tool will help visualize and compare ML experiments, providing insights into hyperparameter tuning and model performance.
@@ -36,6 +36,7 @@ By working on this project, I aim to:
 ## 🔧 **Work in Progress**
 
 This project is a work in progress, and I will continue to add features.
+TO-DO: Plan to deploy for live logging functionality. Currently, the tool runs locally with static data.
 
 ---
 
