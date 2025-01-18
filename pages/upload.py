@@ -20,83 +20,32 @@ if uploaded_file is not None:
     st.write("### Log File Content Preview")
     st.text_area("Log Preview", string_data, height=200)
 
-    # Upload to backend
-    with st.spinner("Uploading log..."):
-        response = requests.post(f"{BASE_URL}/experiments", files={"file": uploaded_file})
+    # Upload and parse log
+    with st.spinner("Uploading and parsing log..."):
+        response = requests.post(f"{BASE_URL}/parse-log", files={"file": uploaded_file})
     
-    if response.status_code == 201:
-        st.success("Upload successful! Please name your run.")
-        
+    if response.status_code == 200:
+        # Parsing successful
+        parsed_data = response.json()
+        st.success("Log file uploaded and parsed successfully!")
+
+        # Show data preview
+        st.write("### Extracted Data")
+        st.json(parsed_data) 
+
+        # Optional: Convert to DataFrame for better viewing
+        df = pd.DataFrame([parsed_data])
+        st.dataframe(df)
+
         # Input for Run ID
         run_id = st.text_input("Enter a name for your run (run_id):")
-        
-        if run_id: 
-            with st.spinner("Uploading and parsing log..."):
-                response = requests.post(f"{BASE_URL}/parse-log", files={"file": uploaded_file})
-        
-            if response.status_code == 200:
-                parsed_data = response.json()
-                
-                experiments = pd.DataFrame([parsed_data])
-                
-                columns_order = [
-                "id",
-                "run_id",
-                "dataset",
-                "started_at",
-                "status",
-                "model",
-                "learning_rate",
-                "batch_size",
-                "num_epochs",
-                "ap",
-                "ap50",
-                "ap75",
-                "aps",
-                "apm",
-                "apl",
-                "total_loss",
-                "loss_cls",
-                "loss_box_reg",
-                "loss_rpn_cls",
-                "loss_rpn_loc",
-                "iterations",
-                "mask_loss",
-            ]
-            experiments = experiments[columns_order]
-            experiments = experiments.rename(
-                columns={
-                    "id": "ID",
-                    "run_id": "Run ID",
-                    "dataset": "Dataset",
-                    "started_at": "Started At",
-                    "status": "Status",
-                    "model": "Model",
-                    "learning_rate": "Learning Rate",
-                    "batch_size": "Batch Size",
-                    "num_epochs": "Number of Epochs",
-                    "ap": "AP",
-                    "ap50": "AP50",
-                    "ap75": "AP75",
-                    "aps": "APS",
-                    "apm": "APM",
-                    "apl": "APL",
-                    "total_loss": "Total Loss",
-                    "loss_cls": "Classification Loss",
-                    "loss_box_reg": "Bbox Regression Loss",
-                    "loss_rpn_cls": "RPN Classification Loss",
-                    "loss_rpn_loc": "RPN Localization Loss",
-                    "iterations": "Iterations",
-                    "mask_loss": "Mask Loss",
-                }
-            )
-            
-            # Show data preview
-            st.write("### Data Preview")
-            st.dataframe(experiments)
-        
-        #Confirm and Save
-        if st.button("Confirm and Save Run"):
+
+        # Confirm and Save
+        if run_id and st.button("Confirm and Save Run"):
+            #Add missing data
+            parsed_data["dataset"] = parsed_data.get("dataset", "unknown_dataset")
+            parsed_data["model"] = parsed_data.get("model", "unknown_model")
+            parsed_data["num_epochs"] = parsed_data.get("num_epochs", 0)
             with st.spinner("Saving run..."):
                 save_response = requests.post(
                     f"{BASE_URL}/create-run",
