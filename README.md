@@ -24,6 +24,7 @@ By working on this project, I aim to:
 - 🏠 Home: Get a Overview over all saved experiments
 - 🔍 Details: Detailed view of one experiment 
 - ⚖️ Compare: Compare two experiments
+- 📤 Upload: Upload a log file to add a experiment to the database
 - 🚀 Running: View running experiments live (Planned Feature)
 
 ## 🛠 **Technologies Used**
