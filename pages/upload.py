@@ -22,7 +22,7 @@ if uploaded_file is not None:
 
     # Upload and parse log
     with st.spinner("Uploading and parsing log..."):
-        response = requests.post(f"{BASE_URL}/parse-log", files={"file": uploaded_file})
+        response = requests.post(f"{BASE_URL}/experiments/parse-log", files={"file": uploaded_file})
     
     if response.status_code == 200:
         # Parsing successful
@@ -48,7 +48,7 @@ if uploaded_file is not None:
             parsed_data["num_epochs"] = parsed_data.get("num_epochs", 0)
             with st.spinner("Saving run..."):
                 save_response = requests.post(
-                    f"{BASE_URL}/create-run",
+                    f"{BASE_URL}/experiments/upload-run",
                     json={"run_id": run_id, **parsed_data}
                 )
             

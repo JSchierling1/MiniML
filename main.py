@@ -5,6 +5,7 @@ from datetime import datetime
 import os
 import logging
 from enum import Enum
+from src.parse_log import parse_log_content
 
 # Initialize logging
 logging.basicConfig(level=logging.INFO)
@@ -25,16 +26,16 @@ class StatusEnum(Enum):
 class Experiment(db.Model): 
     id = db.Column(db.Integer, primary_key=True)
     run_id = db.Column(db.String(200), nullable = False)
-    dataset = db.Column(db.String(200), nullable = False)
-    model = db.Column(db.String(200), nullable = False)
+    dataset = db.Column(db.String(200), nullable = True)
+    model = db.Column(db.String(200), nullable = True)
     started_at = db.Column(db.DateTime, default = datetime.now)
     iterations = db.Column(db.Integer, nullable = False, default = 0)
-    status = db.Column(db.Enum(StatusEnum), nullable = False, default = 'Running')
+    status = db.Column(db.Enum(StatusEnum), nullable = True, default = 'RUNNING')
     
     #Hyperparameters
     learning_rate = db.Column(db.Float, nullable = False)
     batch_size = db.Column(db.Integer, nullable = False)
-    num_epochs = db.Column(db.Integer, nullable = False)
+    num_epochs = db.Column(db.Integer, nullable = True)
     
     #Metrics ( Average Precision)
     ap = db.Column(db.Float, nullable = False, default = 0.0)
@@ -364,6 +365,71 @@ def stream_logs(run_id):
                 yield log + '\n'
     
     return Response(generate(), mimetype='text/plain')
+
+#Upload endpoints 
+@app.route('/experiments/parse-log', methods=['POST'])
+def parse_log():
+    file = request.files.get('file')
+    if not file:
+        logging.error("No file provided for parsing.")
+        return jsonify({"error": "No file provided."}), 400
+
+    try:
+        content = file.read().decode('utf-8')
+
+        parsed_data = parse_log_content(content)
+
+        logging.info("Log parsed successfully.")
+        return jsonify(parsed_data), 200
+    except UnicodeDecodeError:
+        logging.error("File could not be decoded. Ensure it's a valid text file.")
+        return jsonify({"error": "File could not be decoded. Ensure it's a valid text file."}), 400
+    except Exception as e:
+        logging.error(f"Error parsing log file: {str(e)}")
+        return jsonify({"error": str(e)}), 500
+
+@app.route('/experiments/upload-run', methods = ['POST'])
+def create_run(): 
+    data = request.json
+    if not data:
+        logging.error("No JSON data provided.")
+        return jsonify({"error": "No JSON data provided."}), 400
+
+    run_id = data.get('run_id')
+    if not run_id:
+        logging.error("Run ID is required.")
+        return jsonify({"error": "Run ID is required."}), 400
+
+    try: 
+        new_experiment = Experiment(
+            run_id=run_id,
+            dataset=data.get('dataset'),
+            model=data.get('model'),
+            learning_rate=data.get('learning_rate'),
+            batch_size=data.get('batch_size'),
+            num_epochs=data.get('num_epochs'),
+            ap=data.get('ap'),
+            ap50=data.get('ap50'),
+            ap75=data.get('ap75'),
+            aps=data.get('aps'),
+            apm=data.get('apm'),
+            apl=data.get('apl'),
+            total_loss=data.get('total_loss'),
+            loss_cls=data.get('loss_cls'),
+            loss_box_reg=data.get('loss_box_reg'),
+            loss_rpn_cls=data.get('loss_rpn_cls'),
+            loss_rpn_loc=data.get('loss_rpn_loc'),
+            iterations=data.get('iterations'),
+            mask_loss=data.get('mask_loss')
+        )
+        db.session.add(new_experiment)
+        db.session.commit()
+        
+        logging.info(f"Experiment {data['run_id']} created successfully.")
+        return jsonify({"message": "Experiment created successfully!"}), 201
+    except Exception as e:
+        logging.error(f"Error creating experiment: {str(e)}")
+        return jsonify({"error": str(e)}), 400
 
 @app.route('/')
 def hello():
