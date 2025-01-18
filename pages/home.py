@@ -34,7 +34,6 @@ if response.status_code == 200:
         "iterations",
         "mask_loss"
     ]
-    
     experiments = experiments[columns_order]
     experiments = experiments.rename(columns={
         "id": "ID",
