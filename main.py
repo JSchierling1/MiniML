@@ -34,7 +34,7 @@ class Experiment(db.Model):
     
     #Hyperparameters
     learning_rate = db.Column(db.Float, nullable = False)
-    batch_size = db.Column(db.Integer, nullable = False)
+    batch_size = db.Column(db.Integer, nullable = False, default = 0)
     num_epochs = db.Column(db.Integer, nullable = True)
     
     #Metrics ( Average Precision)
