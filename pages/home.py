@@ -59,6 +59,7 @@ if response.status_code == 200:
         "iterations": "Iterations",
         "mask_loss": "Mask Loss"
     })
-    st.dataframe(experiments)
+    st.data_editor(experiments, num_rows="dynamic")
 else: 
     st.error("Failed to load data.")
+    
